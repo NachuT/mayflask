@@ -93,15 +93,23 @@ def check_and_clear_data():
 
 def verify_token(token):
     try:
+        print(f"Verifying token: {token[:10]}...")  # Log first 10 chars for security
         # Check if token starts with "Bearer " and remove it
         if token.startswith('Bearer '):
             token = token[7:]
+            print("Bearer prefix removed")
         
         payload = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
+        print(f"Token verified successfully for user: {payload['username']}")
         return payload['username']
     except jwt.ExpiredSignatureError:
+        print("Token expired")
         return None
-    except jwt.InvalidTokenError:
+    except jwt.InvalidTokenError as e:
+        print(f"Invalid token: {str(e)}")
+        return None
+    except Exception as e:
+        print(f"Unexpected error verifying token: {str(e)}")
         return None
 
 def process_image(image_file):
@@ -396,32 +404,31 @@ def send_message():
             return jsonify({'error': 'No JSON data received'}), 400
             
         token = request.headers.get('Authorization')
+        print(f"Received Authorization header: {token[:10] if token else 'None'}...")
+        
         if not token:
             return jsonify({'error': 'No token provided'}), 401
             
         username = verify_token(token)
         if not username:
             return jsonify({'error': 'Invalid token'}), 401
-            
+        
         message = data.get('message')
         message_type = data.get('type', 'text')
         
-        if not message:
-            return jsonify({'error': 'Message is required'}), 400
+        print(f"Processing message from user {username}: {message[:20]}...")
         
-        # Check and clear data if needed
-        check_and_clear_data()
-        
-        # Add new message to Supabase
-        supabase.table('messages').insert({
-            'timestamp': datetime.now().isoformat(),
+        # Add message to database
+        response = supabase.table('messages').insert({
             'username': username,
             'message': message,
-            'type': message_type
+            'type': message_type,
+            'timestamp': datetime.now().isoformat()
         }).execute()
         
         return jsonify({'status': 'success', 'message': 'Message sent successfully'})
     except Exception as e:
+        print(f"Error in send_message: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
