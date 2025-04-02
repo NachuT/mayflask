@@ -190,7 +190,15 @@ def register():
             'password_hash': hash_password(password)
         }).execute()
         
-        return jsonify({'status': 'success', 'message': 'User registered successfully'})
+        # Generate JWT token
+        token = jwt.encode({'username': username}, JWT_SECRET, algorithm='HS256')
+        
+        return jsonify({
+            'status': 'success', 
+            'message': 'User registered successfully',
+            'username': username,
+            'token': token
+        })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
