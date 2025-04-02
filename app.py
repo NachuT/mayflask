@@ -30,7 +30,7 @@ supabase: Client = create_client(
 )
 
 # Ensure uploads directory exists
-UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'uploads')
+UPLOAD_FOLDER = '/tmp/uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.chmod(UPLOAD_FOLDER, 0o755)  # Set directory permissions to 755
 
