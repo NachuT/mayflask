@@ -17,22 +17,16 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app, resources={
     r"/api/*": {
-        "origins": ["http://localhost:3002", "https://*.vercel.app"],
+        "origins": ["http://localhost:3002", "https://chatter-nachuthenappan.vercel.app"],
         "methods": ["GET", "POST", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization"]
     }
 })
 
-# Initialize Supabase client with options
+# Initialize Supabase client
 supabase: Client = create_client(
     os.getenv('SUPABASE_URL'),
-    os.getenv('SUPABASE_KEY'),
-    options={
-        'auth': {
-            'autoRefreshToken': True,
-            'persistSession': False
-        }
-    }
+    os.getenv('SUPABASE_KEY')
 )
 
 # Ensure uploads directory exists
