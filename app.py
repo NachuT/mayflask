@@ -93,6 +93,10 @@ def check_and_clear_data():
 
 def verify_token(token):
     try:
+        # Check if token starts with "Bearer " and remove it
+        if token.startswith('Bearer '):
+            token = token[7:]
+        
         payload = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
         return payload['username']
     except jwt.ExpiredSignatureError:
