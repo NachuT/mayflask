@@ -1,6 +1,6 @@
 flask==3.1.0
 flask-cors==5.0.1
-supabase-py==0.0.2
+supabase
 python-dotenv==1.0.1
 PyJWT==2.8.0
 Werkzeug==3.1.3
